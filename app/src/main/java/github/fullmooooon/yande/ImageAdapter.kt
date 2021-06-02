@@ -79,14 +79,18 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
                     imageView.setImageBitmap(_resource)
                     imageView.visibility = View.VISIBLE
                     imageView.setOnClickListener {
-                        Log.e(TAG, "onResourceReady: imageview click", )
+                        Log.e(TAG, "onResourceReady: imageview click")
                         val mainActivity = context as MainActivity
-                        val photoView : PhotoView = mainActivity.findViewById(R.id.photo_view)
+                        val photoView: PhotoView = mainActivity.findViewById(R.id.photo_view)
                         photoView.setImageBitmap(_resource)
-                        val fragment: View = (context as MainActivity).findViewById(R.id.fragment_fullscreen)
-                        if (fragment.visibility == View.GONE) fragment.visibility =
+                        val fragment: View =
+                            (context as MainActivity).findViewById(R.id.fragment_fullscreen)
+                        fragment.visibility =
                             View.VISIBLE
-                        else fragment.visibility = View.GONE
+                        photoView.setOnClickListener {
+                            Log.e(TAG, "onResourceReady: gone", )
+                            fragment.visibility = View.GONE
+                        }
                         fragment.bringToFront()
                     }
                 }

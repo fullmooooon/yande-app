@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -27,7 +28,7 @@ import org.dom4j.Element
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    MaterialSearchBar.OnSearchActionListener, PopupMenu.OnMenuItemClickListener{
+    MaterialSearchBar.OnSearchActionListener, PopupMenu.OnMenuItemClickListener {
 
 //    class FullScreenFragment : Fragment(R.layout.fragment_fullscreen)
 
@@ -37,24 +38,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var searchBar: MaterialSearchBar? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        if (savedInstanceState == null) {
-//            supportFragmentManager.commit {
-//                setReorderingAllowed(true)
-//                add<FullScreenFragment>(R.id.fragment_fullscreen)
-//            }
-//        }
-
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
-//        val bundle = bundleOf("some_int" to 0)
-//        supportFragmentManager.commit {
-//            setReorderingAllowed(true)
-//            add<MainActivity>(R.id.fragment_fullscreen,FullScreenFragment())
+//        val fragment: FragmentContainerView = findViewById(R.id.fragment_fullscreen)
+//        fragment.setOnClickListener {
+//            Log.e(TAG, "onCreate: fragmentclick", )
+//
 //        }
-
 
 
 //        val fab: FloatingActionButton = findViewById(R.id.fab)
@@ -99,7 +91,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             })
-            recyclerView.recycledViewPool.setMaxRecycledViews(0,20)
+            recyclerView.recycledViewPool.setMaxRecycledViews(0, 20)
             recyclerView.setDrawingCacheEnabled(true);
         }
 
@@ -126,6 +118,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        saveSearchSuggestionToDisk(searchBar.getLastSuggestions());
         super.onDestroy()
     }
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
@@ -138,11 +131,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onSearchConfirmed(text: CharSequence?) {
         Log.e(TAG, "onSearchConfirmed: ${text}")
-        imageAdapter.page=0
-        imageAdapter.tags=text.toString()
-        imageAdapter.mList=emptyList<Element>()
+        imageAdapter.page = 0
+        imageAdapter.tags = text.toString()
+        imageAdapter.mList = emptyList<Element>()
         imageAdapter.loadNextPage()
-        val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm: InputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)
     }
 
