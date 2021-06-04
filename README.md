@@ -8,10 +8,10 @@ yande.re的第三方APP
 + 能搜索
 + 能到底自动翻页
 + 单击图片全屏
++ 下拉刷新
 
 
 ## TODO
-+ 下拉刷新
 + 登录
 + tag:e 和 tag:extreme_content 屏蔽设置
 + logo
