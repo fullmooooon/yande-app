@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.navigation.NavigationView
 import com.mancj.materialsearchbar.MaterialSearchBar
 import okhttp3.*
@@ -36,12 +37,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var imageAdapter: ImageAdapter
     private var lastSearches: List<String>? = null
     private var searchBar: MaterialSearchBar? = null
+    var searchText: CharSequence = ""
+    lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        mSwipeRefreshLayout = findViewById( R.id.swiperefresh)
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.blue,R.color.purple,R.color.green,R.color.orange)
+        mSwipeRefreshLayout.setOnRefreshListener {
+            resetImageAdapter()
+        }
 //        val fragment: FragmentContainerView = findViewById(R.id.fragment_fullscreen)
 //        fragment.setOnClickListener {
 //            Log.e(TAG, "onCreate: fragmentclick", )
@@ -98,12 +107,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         searchBar = findViewById(R.id.searchBar) as MaterialSearchBar
         searchBar!!.setHint("Custom hint")
         searchBar!!.setSpeechMode(true)
-        //enable searchbar callbacks
         searchBar!!.setOnSearchActionListener(this)
-        //restore last queries from disk
-//        lastSearches = loadSearchSuggestionFromDisk()
-//        searchBar!!.setLastSuggestions(list)
-        //Inflate menu and setup OnMenuItemClickListener
         searchBar!!.inflateMenu(R.menu.main)
         searchBar!!.getMenu().setOnMenuItemClickListener(this)
     }
@@ -131,10 +135,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onSearchConfirmed(text: CharSequence?) {
         Log.e(TAG, "onSearchConfirmed: ${text}")
-        imageAdapter.page = 0
-        imageAdapter.tags = text.toString()
-        imageAdapter.mList = emptyList<Element>()
-        imageAdapter.loadNextPage()
+        if (text != null) {
+            searchText=text
+        }
+        resetImageAdapter()
         val imm: InputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)
@@ -151,7 +155,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         return true
     }
-//    public fun showImageFragment(){
-//
-//    }
+    fun resetImageAdapter(){
+        imageAdapter.page = 0
+        imageAdapter.tags = searchText.toString()
+        imageAdapter.mList = emptyList<Element>()
+        imageAdapter.loadNextPage()
+    }
+    fun stopRefreshing(){
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
 }

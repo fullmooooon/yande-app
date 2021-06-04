@@ -31,6 +31,7 @@ val TAG = "哼哼"
 
 class ImageAdapter(var baseUrl: String, var context: Context) :
     RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+    val mainActivity = context as MainActivity
     var wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     var disWidth = wm.defaultDisplay.width
     var disHeight = wm.defaultDisplay.height
@@ -80,15 +81,20 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
                     imageView.visibility = View.VISIBLE
                     imageView.setOnClickListener {
                         Log.e(TAG, "onResourceReady: imageview click")
-                        val mainActivity = context as MainActivity
+
                         val photoView: PhotoView = mainActivity.findViewById(R.id.photo_view)
-                        photoView.setImageBitmap(_resource)
+                        photoView.setImageBitmap(resource)
+//                        Glide.with(context)
+//                            .asBitmap()
+//                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                            .load(item.attributeValue("jpeg_url"))
+//                            .into(photoView)
                         val fragment: View =
                             (context as MainActivity).findViewById(R.id.fragment_fullscreen)
                         fragment.visibility =
                             View.VISIBLE
                         photoView.setOnClickListener {
-                            Log.e(TAG, "onResourceReady: gone", )
+                            Log.e(TAG, "onResourceReady: gone")
                             fragment.visibility = View.GONE
                         }
                         fragment.bringToFront()
@@ -135,6 +141,7 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
                 var document = DocumentHelper.parseText(html)
                 document.rootElement.elements("post")
                 mList = mList.plus(document.rootElement.elements("post"))
+                mainActivity.stopRefreshing()
                 Log.e(TAG, "onResponse: ${mList.size}")
                 runOnUiThread {
                     notifyDataSetChanged()
