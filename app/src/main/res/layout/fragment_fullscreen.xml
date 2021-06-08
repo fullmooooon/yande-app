@@ -6,6 +6,7 @@
     android:background="#CC000000">
 
     <com.github.chrisbanes.photoview.PhotoView
+        android:longClickable="true"
         android:id="@+id/photo_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

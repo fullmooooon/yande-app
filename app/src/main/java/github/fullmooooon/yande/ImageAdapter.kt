@@ -1,30 +1,31 @@
 package github.fullmooooon.yande
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
-
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.github.chrisbanes.photoview.PhotoView
+import com.kennyc.bottomsheet.BottomSheetListener
+import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
 import okhttp3.*
 import okio.IOException
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
-import java.util.regex.Pattern
+import java.io.File
+import java.net.URL
 
 
 val TAG = "哼哼"
@@ -97,6 +98,22 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
                             Log.e(TAG, "onResourceReady: gone")
                             fragment.visibility = View.GONE
                         }
+
+                        myListener.context=context
+                        myListener.imageUrl=item.attributeValue("sample_url")
+                        myListener.filename="yande_id_"+item.attributeValue("id")+".jpg"
+                        photoView.setOnLongClickListener {
+                            BottomSheetMenuDialogFragment.Builder(
+                                context = context,
+                                sheet = R.menu.fragment_fullscreen_dialog,
+                                listener = myListener,
+                                title = "(=￣ω￣=)",
+                                `object` = myObject
+                            )
+                                .show(mainActivity.supportFragmentManager)
+
+                            false
+                        }
                         fragment.bringToFront()
                     }
                 }
@@ -159,4 +176,50 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
         }
     }
 
+}
+
+
+object myObject {
+
+}
+
+
+@SuppressLint("StaticFieldLeak")
+object myListener : BottomSheetListener {
+
+    lateinit var context:Context
+    lateinit var imageUrl:String
+    lateinit var filename:String
+
+    override fun onSheetDismissed(
+        bottomSheet: BottomSheetMenuDialogFragment,
+        `object`: Any?,
+        dismissEvent: Int
+    ) {
+
+    }
+
+    override fun onSheetItemSelected(
+        bottomSheet: BottomSheetMenuDialogFragment,
+        item: MenuItem,
+        `object`: Any?
+    ) {
+        Log.e(TAG, "onSheetItemSelected: ")
+
+        Glide.with(context)
+            .asBitmap()
+            .load(imageUrl)
+            .into(object : SimpleTarget<Bitmap?>() {
+                override fun onResourceReady(resource: Bitmap,  transition: Transition<in Bitmap?>?) {
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(),resource,filename,"")
+                    Toast.makeText(context, "图片保存大成功！", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+    }
+
+
+    override fun onSheetShown(bottomSheet: BottomSheetMenuDialogFragment, `object`: Any?) {
+
+    }
 }
