@@ -16,3 +16,12 @@ yande.re的第三方APP
 + tag:e 和 tag:extreme_content 屏蔽设置
 + logo
 + 内置旁路阻断访问源站点
+
+## Thanks
+
+感谢这些项目的帮助
+
+- [BottomSheetMenu](https://github.com/Kennyc1012/BottomSheetMenu)
+- [dom4j](https://github.com/dom4j/dom4j)
+- [PhotoView](https://github.com/Baseflow/PhotoView)
+- [glide](https://github.com/bumptech/glide)
