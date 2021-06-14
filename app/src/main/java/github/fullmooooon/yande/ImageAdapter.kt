@@ -91,13 +91,9 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
 //                            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //                            .load(item.attributeValue("jpeg_url"))
 //                            .into(photoView)
-                        val fragment: View =
-                            (context as MainActivity).findViewById(R.id.fragment_fullscreen)
-                        fragment.visibility =
-                            View.VISIBLE
+                        mainActivity.fullscreenFragmentShow()
                         photoView.setOnClickListener {
-                            Log.e(TAG, "onResourceReady: gone")
-                            fragment.visibility = View.GONE
+                            mainActivity.fullscreenFragmentHidden()
                         }
 
                         myListener.imageAdapter = this@ImageAdapter
@@ -116,7 +112,7 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
 
                             false
                         }
-                        fragment.bringToFront()
+                        mainActivity.fragment_fullscreen.bringToFront()
                     }
                 }
 

@@ -3,6 +3,7 @@ package github.fullmooooon.yande
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -38,7 +39,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var lastSearches: List<String>? = null
     private var searchBar: MaterialSearchBar? = null
     var searchText: CharSequence = ""
-    lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
+    lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    lateinit var fragment_fullscreen: View
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +49,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        mSwipeRefreshLayout = findViewById( R.id.swiperefresh)
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.blue,R.color.purple,R.color.green,R.color.orange)
+        fragment_fullscreen = findViewById(R.id.fragment_fullscreen)
+        mSwipeRefreshLayout = findViewById(R.id.swiperefresh)
+        mSwipeRefreshLayout.setColorSchemeResources(
+            R.color.blue,
+            R.color.purple,
+            R.color.green,
+            R.color.orange
+        )
         mSwipeRefreshLayout.setOnRefreshListener {
             resetImageAdapter()
         }
@@ -136,7 +145,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onSearchConfirmed(text: CharSequence?) {
         Log.e(TAG, "onSearchConfirmed: ${text}")
         if (text != null) {
-            searchText=text
+            searchText = text
         }
         resetImageAdapter()
         val imm: InputMethodManager =
@@ -155,13 +164,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         return true
     }
-    fun resetImageAdapter(){
+
+    fun resetImageAdapter() {
         imageAdapter.page = 0
         imageAdapter.tags = searchText.toString()
         imageAdapter.mList = emptyList<Element>()
         imageAdapter.loadNextPage()
     }
-    fun stopRefreshing(){
+
+    fun stopRefreshing() {
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    fun fullscreenFragmentShow() {
+        fragment_fullscreen.visibility =
+            View.VISIBLE
+    }
+
+    fun fullscreenFragmentHidden() {
+        fragment_fullscreen.visibility =
+            View.GONE
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (fragment_fullscreen.visibility ==
+                View.VISIBLE
+            ) {
+                this.fullscreenFragmentHidden()
+                return true;
+            } else {
+                return super.onKeyDown(keyCode, event)
+            }
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }
