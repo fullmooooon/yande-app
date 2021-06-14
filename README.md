@@ -16,6 +16,11 @@ yande.re的第三方APP
 + tag:e 和 tag:extreme_content 屏蔽设置
 + logo
 + 内置旁路阻断访问源站点
++ i18n
++ 展示图片信息
++ 展示评论
++ 进行评论
++ 收藏
 
 ## Thanks
 
