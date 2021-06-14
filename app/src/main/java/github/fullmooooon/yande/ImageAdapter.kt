@@ -40,6 +40,7 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
     var mList: List<Element> = emptyList<Element>()
     var imageLoadCount = 0
     var tags = ""
+    lateinit var photoView: PhotoView
 
     class ViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -83,7 +84,7 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
                     imageView.setOnClickListener {
                         Log.e(TAG, "onResourceReady: imageview click")
 
-                        val photoView: PhotoView = mainActivity.findViewById(R.id.photo_view)
+                        photoView = mainActivity.findViewById(R.id.photo_view)
                         photoView.setImageBitmap(resource)
 //                        Glide.with(context)
 //                            .asBitmap()
@@ -99,16 +100,17 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
                             fragment.visibility = View.GONE
                         }
 
-                        myListener.context=context
-                        myListener.imageUrl=item.attributeValue("sample_url")
-                        myListener.filename="yande_id_"+item.attributeValue("id")+".jpg"
+                        myListener.imageAdapter = this@ImageAdapter
+                        myListener.itemElement = item
+//                        myListener.imageUrl = item.attributeValue("sample_url")
+//                        myListener.filename = "yande_id_" + item.attributeValue("id") + ".jpg"
                         photoView.setOnLongClickListener {
                             BottomSheetMenuDialogFragment.Builder(
                                 context = context,
                                 sheet = R.menu.fragment_fullscreen_dialog,
                                 listener = myListener,
                                 title = "(=￣ω￣=)",
-                                `object` = myObject
+                                `object` = this
                             )
                                 .show(mainActivity.supportFragmentManager)
 
@@ -176,6 +178,43 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
         }
     }
 
+    fun downloadImg(item: Element) {
+        val imageUrl = item.attributeValue("jpeg_url")
+        val filename = "yande_id_" + item.attributeValue("id") + ".jpg"
+        Glide.with(context)
+            .asBitmap()
+            .load(imageUrl)
+            .into(object : SimpleTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    MediaStore.Images.Media.insertImage(
+                        context.contentResolver,
+                        resource,
+                        filename,
+                        ""
+                    )
+                    Toast.makeText(context, "图片保存大成功！", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    fun loadHd(item: Element) {
+        val imageHDUrl = item.attributeValue("jpeg_url")
+        Glide.with(context)
+            .asBitmap()
+            .load(imageHDUrl)
+            .into(object : SimpleTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    photoView.setImageBitmap(resource)
+                }
+            })
+
+    }
 }
 
 
@@ -187,9 +226,8 @@ object myObject {
 @SuppressLint("StaticFieldLeak")
 object myListener : BottomSheetListener {
 
-    lateinit var context:Context
-    lateinit var imageUrl:String
-    lateinit var filename:String
+    lateinit var imageAdapter: ImageAdapter
+    lateinit var itemElement: Element
 
     override fun onSheetDismissed(
         bottomSheet: BottomSheetMenuDialogFragment,
@@ -204,18 +242,15 @@ object myListener : BottomSheetListener {
         item: MenuItem,
         `object`: Any?
     ) {
-        Log.e(TAG, "onSheetItemSelected: ")
-
-        Glide.with(context)
-            .asBitmap()
-            .load(imageUrl)
-            .into(object : SimpleTarget<Bitmap?>() {
-                override fun onResourceReady(resource: Bitmap,  transition: Transition<in Bitmap?>?) {
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(),resource,filename,"")
-                    Toast.makeText(context, "图片保存大成功！", Toast.LENGTH_SHORT).show()
-                }
-            })
-
+        when (item.itemId) {
+            R.id.BS_download -> {
+                Log.e(TAG, "item.itemId==R.id.BS_download")
+                imageAdapter.downloadImg(itemElement)
+            }
+            R.id.BS_loadHD -> {
+                imageAdapter.loadHd(itemElement)
+            }
+        }
     }
 
 
