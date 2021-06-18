@@ -35,10 +35,12 @@
     <PreferenceCategory app:title="@string/tag_filter">
 
         <SwitchPreferenceCompat
+            app:defaultValue="false"
             app:key="tag_e_filter"
             app:title="@string/tag_e_summary"/>
 
         <SwitchPreferenceCompat
+            app:defaultValue="true"
             app:key="tag_extreme_filter"
             app:title="@string/tag_extreme_summary"/>
     </PreferenceCategory>
