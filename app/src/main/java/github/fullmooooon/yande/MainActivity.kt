@@ -1,6 +1,7 @@
 package github.fullmooooon.yande
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -18,6 +19,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +44,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     lateinit var fragment_fullscreen: View
 
+    var tagE:Boolean=false
+    var tagExtreme:Boolean=true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +53,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        getSetting()
         fragment_fullscreen = findViewById(R.id.fragment_fullscreen)
         mSwipeRefreshLayout = findViewById(R.id.swiperefresh)
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -85,6 +90,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        navView.setNavigationItemSelectedListener {
+            when (it.itemId){
+                R.id.nav_setting->{
+                    val intent=Intent(this,SettingsActivity::class.java)
+                    startActivity(intent)
+                }
+                else ->{
+                    Log.e(TAG, "unknow itemID" )
+                }
+            }
+
+            true
+        }
 
         imageAdapter = ImageAdapter("https://oreno.imouto.us/", this)
         val recyclerView: RecyclerView = findViewById(R.id.rv)
@@ -158,11 +176,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.e(TAG, "onNavigationItemSelected: ", )
         return true
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
+        Log.e(TAG, "onNavigationItemSelected: ", )
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.e(TAG, "onOptionsItemSelected: ", )
+        return super.onOptionsItemSelected(item)
     }
 
     fun resetImageAdapter() {
@@ -184,6 +209,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun fullscreenFragmentHidden() {
         fragment_fullscreen.visibility =
             View.GONE
+    }
+
+    fun getSetting(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        tagE = sharedPreferences.getBoolean("tag_e_filter", false)
+        tagExtreme = sharedPreferences.getBoolean("tag_extreme_filter", false)
+        Log.e(TAG, "tag $tagE $tagExtreme")
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

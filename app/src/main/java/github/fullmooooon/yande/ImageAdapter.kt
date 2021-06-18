@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -60,8 +61,24 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
         Log.e(TAG, "onBindViewHolder: ${holder}")
         val item = mList[position]
         var imageView: ImageView = holder.ivIcon
+        if(mainActivity.tagE){
+            //屏蔽tage图片
+            if(checkTagE(item)){
+                Log.e(TAG, "$position Gone", )
+                imageView.visibility = View.GONE
+                return
+            }
+        }
+        if(mainActivity.tagExtreme){
+            //屏蔽tag:extreme_content的图片
+            if(checkTagExtreme(item)){
+                Log.e(TAG, "$position Gone", )
+                imageView.visibility = View.GONE
+                return
+            }
+        }
+        Log.e(TAG, "$position INVISIBLE", )
         imageView.visibility = View.INVISIBLE
-        imageView.resources
         val url = item.attributeValue("sample_url")
         Glide.with(context)
             .asBitmap()
@@ -211,6 +228,14 @@ class ImageAdapter(var baseUrl: String, var context: Context) :
             })
 
     }
+
+    fun checkTagE(element:Element):Boolean{
+        return element.attributeValue("rating")=="e"
+    }
+    fun checkTagExtreme(element:Element):Boolean{
+        return element.attributeValue("tags").split(" ").contains("extreme_content")
+    }
+
 }
 
 
@@ -253,4 +278,5 @@ object myListener : BottomSheetListener {
     override fun onSheetShown(bottomSheet: BottomSheetMenuDialogFragment, `object`: Any?) {
 
     }
+
 }
