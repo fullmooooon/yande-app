@@ -10,10 +10,10 @@ yande.re的第三方APP
 + 单击图片全屏
 + 下拉刷新
 + 长按保存图片 (=￣ω￣=)
++ tag:e 和 tag:extreme_content 屏蔽设置 ，当前默认是 （false，true）
 
 ## TODO
 + 登录
-+ tag:e 和 tag:extreme_content 屏蔽设置
 + logo
 + 内置旁路阻断访问源站点
 + i18n
